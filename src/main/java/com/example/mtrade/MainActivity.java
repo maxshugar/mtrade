@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 String username = username_input.getText().toString();
                 EditText password_input = findViewById(R.id.password_input);
                 String password = password_input.getText().toString();
-
+                /* Input validation. */
                 if(username.isEmpty() || password.isEmpty()){
                     Toast.makeText(MainActivity.this, "Please complete all input fields.", Toast.LENGTH_LONG).show();
                 }
