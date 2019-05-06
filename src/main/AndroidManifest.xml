@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".register"> </activity>
+        <activity android:name=".orders"> </activity>
     </application>
 
 </manifest>

@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         final database_helper my_db = new database_helper(this);
         //my_db.register_user("MAX","EMAIL","BLUE_CAR");
 
-
         Button login_btn = findViewById(R.id.login_btn);
 
         login_btn.setOnClickListener(new View.OnClickListener(){
@@ -60,11 +59,14 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Password incorrect.", Toast.LENGTH_LONG).show();
                     } else if( ret == 0 ){
                         Toast.makeText(MainActivity.this, "Login successful :)", Toast.LENGTH_LONG).show();
+
+                        Intent intent = new Intent(MainActivity.this, orders.class);
+                        //intent.putExtra("TABLE_NAME", "USERS");
+                        startActivity(intent);
+
                     }
 
-                    //Intent intent = new Intent(MainActivity.this, register.class);
-                    //intent.putExtra("TABLE_NAME", "USERS");
-                    //startActivity(intent);
+
                 }
 
             }
