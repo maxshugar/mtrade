@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        /* Override login. */
+        Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
+        startActivity(intent);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate");
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if( ret == 0 ){
                         Toast.makeText(MainActivity.this, "Login successful :)", Toast.LENGTH_LONG).show();
 
-                        Intent intent = new Intent(MainActivity.this, orders.class);
+                        Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
                         //intent.putExtra("TABLE_NAME", "USERS");
                         startActivity(intent);
 
