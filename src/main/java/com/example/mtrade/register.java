@@ -49,7 +49,7 @@ public class register extends AppCompatActivity {
                 String password2 = password_input2.getText().toString();
                 Log.d(TAG, "password: '" + password + "'");
                 Log.d(TAG, "password2: '" + password2 + "'");
-                if(username.isEmpty() || email.isEmpty() || password.isEmpty() || password2.isEmpty()){
+                if(username == "" || email == "" || password == "" || password2 == ""){
                     Toast.makeText(register.this, "Please complete all input fields.", Toast.LENGTH_LONG).show();
                 }
                 else if(password.equals(password2) == false){
