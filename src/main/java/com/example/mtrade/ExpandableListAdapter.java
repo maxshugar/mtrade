@@ -13,32 +13,31 @@ import java.util.List;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private HashMap<String, List<String>> mStringListHashMap;
-    private String[] mListHeaderGroup;
+    private List<order> ordersList;
 
-    public ExpandableListAdapter(HashMap<String, List<String>> mStringListHashMap) {
-        this.mStringListHashMap = mStringListHashMap;
-        mListHeaderGroup = mStringListHashMap.keySet().toArray(new String[0]);
+    public ExpandableListAdapter(List<order> ordersList) {
+        this.ordersList = ordersList;
     }
 
     @Override
     public int getGroupCount() {
-        return mListHeaderGroup.length;
+        return ordersList.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return mStringListHashMap.get(mListHeaderGroup[groupPosition]).size();
+        return ordersList.get(groupPosition).rooms.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return mListHeaderGroup[groupPosition];
+
+        return ordersList.get(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return mStringListHashMap.get(mListHeaderGroup[groupPosition]).get(childPosition);
+        return ordersList.get(groupPosition).rooms.get(childPosition);
     }
 
     @Override
@@ -59,10 +58,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         if(convertView == null)
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_items, parent, false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.order, parent, false);
 
-        TextView textView = convertView.findViewById(R.id.heading);
-        textView.setText(String.valueOf(getGroup(groupPosition)));
+        order currentOrder = ordersList.get(groupPosition);
+
+        TextView customer_name = convertView.findViewById(R.id.customer_name);
+        customer_name.setText(currentOrder.customer_name);
+
+        TextView due_date = convertView.findViewById(R.id.due_date);
+        due_date.setText(currentOrder.due_date);
 
         return convertView;
     }
@@ -72,12 +76,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if(convertView == null)
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.child_items, parent, false);
 
+        order currentOrder = ordersList.get(groupPosition);
+
+        ListView listView = convertView.findViewById(R.id.childItem);
+
+        //order currentOrder = mOrderHashMap.get(groupPosition);
+
+        /*
         ListView listView = convertView.findViewById(R.id.childItem);
         String [] s = new String[] {"test1", "test2", "test3", "test4"};
 
         ArrayAdapter ad = new ArrayAdapter( convertView.getContext(), android.R.layout.simple_expandable_list_item_1, s );
         listView.setAdapter(ad);
         //textView.setText(String.valueOf(getChild(groupPosition, childPosition)));
+        */
 
         return convertView;
     }

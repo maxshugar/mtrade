@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreate");
         /* Override login. */
         Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
         startActivity(intent);
@@ -36,9 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate");
+
         final database_helper my_db = new database_helper(this);
-        //my_db.register_user("MAX","EMAIL","BLUE_CAR");
 
         Button login_btn = findViewById(R.id.login_btn);
 
@@ -71,10 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
 
                     }
-
-
-                }
-
+               }
             }
         });
 
@@ -88,11 +84,5 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
     }
-
-
-
 }

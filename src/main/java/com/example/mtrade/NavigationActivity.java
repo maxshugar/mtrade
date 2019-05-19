@@ -1,11 +1,21 @@
 package com.example.mtrade;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +23,7 @@ import androidx.fragment.app.Fragment;
 
 public class NavigationActivity extends AppCompatActivity {
 
-    private static final String TAG =  "orders";
+    private static final String TAG =  "NavigationActivity";
 
     /* Disable back button. */
     @SuppressLint("MissingSuperCall")
@@ -25,7 +35,11 @@ public class NavigationActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
         return true;
     }
 
@@ -41,26 +55,25 @@ public class NavigationActivity extends AppCompatActivity {
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListner =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                    Fragment selectedFragment = null;
-                    switch (menuItem.getItemId()) {
-                        case R.id.nav_orders:
-                            selectedFragment = new OrdersFragment();
-                            break;
-                        case R.id.nav_floors:
-                            selectedFragment = new FloorsFragment();
-                            break;
-                        case R.id.nav_customers:
-                            selectedFragment = new CustomersFragment();
-                            break;
-                    }
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                            selectedFragment).commit();
-                    return true;
+        new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                Fragment selectedFragment = null;
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_orders:
+                        selectedFragment = new OrdersFragment();
+                        break;
+                    case R.id.nav_floors:
+                        selectedFragment = new FloorsFragment();
+                        break;
+                    case R.id.nav_customers:
+                        selectedFragment = new CustomersFragment();
+                        break;
                 }
-            };
-
-
+                invalidateOptionsMenu();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        selectedFragment).commit();
+                return true;
+            }
+        };
 }
