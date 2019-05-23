@@ -21,12 +21,14 @@ public class CustomerAdapter extends ArrayAdapter<customer> {
     private Context cContext;
     private List<customer> customersList;
 
+    /* Constructor - get customer class list. */
     public CustomerAdapter(@NonNull Context context, @SuppressLint("SupportAnnotationUsage") @LayoutRes ArrayList<customer> list) {
         super(context, 0 , list);
         cContext = context;
         customersList = list;
     }
 
+    /* Bind customer to text views and handle selected background. */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -43,7 +45,7 @@ public class CustomerAdapter extends ArrayAdapter<customer> {
         email.setText(currentCustomer.email);
 
         if(currentCustomer.selected){
-            listItem.setBackgroundColor(Color.BLUE);
+            listItem.setBackgroundColor(Color.LTGRAY);
         } else {
             listItem.setBackgroundColor(Color.WHITE);
         }

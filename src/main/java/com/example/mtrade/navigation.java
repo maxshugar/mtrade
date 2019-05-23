@@ -22,17 +22,19 @@ public class navigation extends AppCompatActivity {
         //super.onBackPressed();
     }
 
+    /* Inflate navigation view. */
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
-
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListner);
-
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new OrdersFragment()).commit();
+
     }
 
+    /* Switch between navigation fragments. */
     private BottomNavigationView.OnNavigationItemSelectedListener navListner =
         new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

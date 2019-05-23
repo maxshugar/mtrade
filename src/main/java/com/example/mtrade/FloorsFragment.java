@@ -32,26 +32,23 @@ public class FloorsFragment extends Fragment {
     boolean add_flag = true;
     boolean edit_flag = false;
     boolean delete_flag = false;
-
-
-
     ArrayList<floor> floors = new ArrayList<>();
-
+    private String user_id;
     private static final String TAG =  "FloorsFragment";
 
+    /* Create instance of floor adapter and handle action bar click events. */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        Bundle args = getArguments();
+        user_id = args.getString("USER_ID");
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
-
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Floor Types");
-
         database_helper db = new database_helper(getActivity());
         final View view = inflater.inflate(R.layout.fragment_floors, container, false);
-
-        Cursor c = db.get_floors("1");
+        Cursor c = db.get_floors(user_id);
         while(c.moveToNext()){
             floors.add(new floor(
                     c.getString(c.getColumnIndex("FLOOR_ID")),
@@ -59,13 +56,10 @@ public class FloorsFragment extends Fragment {
                     c.getDouble(c.getColumnIndex("FLOOR_COST"))));
         }
         c.close();
-
         final ListView simpleList = view.findViewById(R.id.simpleListView);
         final FloorAdapter fAdapter = new FloorAdapter(getContext(), floors);
         simpleList.setAdapter(fAdapter);
-
         final int[] selected = {0};
-
         simpleList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -77,7 +71,6 @@ public class FloorsFragment extends Fragment {
                     selected[0] += 1;
                     floors.get(position).select();
                 }
-
                 if(selected[0] == 0){
                     add_flag = true;
                     ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Floor Types");
@@ -85,25 +78,20 @@ public class FloorsFragment extends Fragment {
                     add_flag = false;
                     ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(selected[0] + " selected");
                 }
-
                 if(selected[0] == 1){
                     edit_flag = true;
                 } else {
                     edit_flag = false;
                 }
-
                 if(selected[0] >= 1){
                     delete_flag = true;
                 } else {
                     delete_flag = false;
                 }
-
                 fAdapter.notifyDataSetChanged();
                 getActivity().invalidateOptionsMenu();
-
             }
         });
-
         return view;
 
     }
@@ -115,6 +103,7 @@ public class FloorsFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /* Set click event listeners for action bar. */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
@@ -122,27 +111,28 @@ public class FloorsFragment extends Fragment {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener (){
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 LayoutInflater inflater = getLayoutInflater();
                 final View mView = inflater.inflate(R.layout.dialog_new_floor, null);
                 builder.setView(mView)
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-
                                 EditText name_input = mView.findViewById(R.id.name);
                                 String name = name_input.getText().toString();
                                 EditText cost_input = mView.findViewById(R.id.cost);
                                 String cost = cost_input.getText().toString();
-
                                 if(name.isEmpty() || cost.isEmpty()){
                                     Toast.makeText(getContext(),"Please fill out all input fields.", Toast.LENGTH_SHORT).show();
                                 } else {
                                     database_helper db = new database_helper(getActivity());
-                                    if(db.create_floor(name, cost, 1) == 0){
+                                    if(db.create_floor(name, cost, Integer.parseInt(user_id)) == 0){
                                         Toast.makeText(getContext(),"Floor created successfully.", Toast.LENGTH_SHORT).show();
+                                        Fragment fragment = new FloorsFragment();
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("USER_ID", user_id);
+                                        fragment.setArguments(bundle);
                                         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                                new FloorsFragment()).commit();
+                                                fragment).commit();
                                     } else {
                                         Toast.makeText(getContext(),"Something went wrong.", Toast.LENGTH_SHORT).show();
                                     }
@@ -150,9 +140,7 @@ public class FloorsFragment extends Fragment {
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getContext(),"cancel clicked",Toast.LENGTH_SHORT).show();
-                            }
+                            public void onClick(DialogInterface dialog, int id) {}
                         })
                         .setTitle("Add Floor");
                 AlertDialog dialog = builder.create();
@@ -179,7 +167,6 @@ public class FloorsFragment extends Fragment {
                         firstname_input.setText(floor.name);
                         final EditText lastname_input = mView.findViewById(R.id.cost);
                         lastname_input.setText(floor.cost.toString());
-
                         builder.setView(mView)
                                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
@@ -188,7 +175,6 @@ public class FloorsFragment extends Fragment {
                                         String name = name_input.getText().toString();
                                         EditText cost_input = mView.findViewById(R.id.cost);
                                         String cost = cost_input.getText().toString();
-
                                         if(name.isEmpty() || cost.isEmpty()){
                                             Toast.makeText(getContext(),"Please fill out all input fields.", Toast.LENGTH_SHORT).show();
                                         } else {
@@ -197,16 +183,19 @@ public class FloorsFragment extends Fragment {
                                                 Toast.makeText(getContext(),"Something went wrong.", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(getContext(),"Update successful",Toast.LENGTH_SHORT).show();
+
+                                                Fragment fragment = new FloorsFragment();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("USER_ID", user_id);
+                                                fragment.setArguments(bundle);
                                                 getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                                        new FloorsFragment()).commit();
+                                                        fragment).commit();
                                             }
                                         }
                                     }
                                 })
                                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(getContext(),"cancel clicked",Toast.LENGTH_SHORT).show();
-                                    }
+                                    public void onClick(DialogInterface dialog, int id) {}
                                 })
                                 .setTitle("Edit Floor");
                         AlertDialog dialog = builder.create();
@@ -225,7 +214,6 @@ public class FloorsFragment extends Fragment {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener (){
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @TargetApi(Build.VERSION_CODES.N)
                     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -233,7 +221,6 @@ public class FloorsFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
-
                                 Boolean fail_flag = false;
                                 for (floor floor : floors) {
                                     if(floor.selected){
@@ -248,18 +235,17 @@ public class FloorsFragment extends Fragment {
                                     Toast.makeText(getContext(),"Something went wrong.",Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getContext(),"Delete successful",Toast.LENGTH_SHORT).show();
+                                    Fragment fragment = new FloorsFragment();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("USER_ID", user_id);
+                                    fragment.setArguments(bundle);
                                     getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                            new FloorsFragment()).commit();
+                                            fragment).commit();
                                 }
-
-                                break;
-                            case DialogInterface.BUTTON_NEGATIVE:
-
                                 break;
                         }
                     }
                 };
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).setTitle("Delete selected").show();

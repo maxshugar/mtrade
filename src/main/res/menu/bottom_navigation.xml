@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_orders"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@android:drawable/star_big_on"
         android:title="Orders" />
     <item
         android:id="@+id/nav_floors"
-        android:icon="@drawable/ic_3d_rotation_black_24dp"
+        android:icon="@android:drawable/bottom_bar"
         android:title="Floors" />
     <item
         android:id="@+id/nav_customers"
         android:icon="@drawable/ic_contacts_black_24dp"
-        android:title="Contacts" />
+        android:title="Customers" />
 </menu>

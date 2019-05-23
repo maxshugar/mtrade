@@ -8,6 +8,7 @@ public class customer {
     public String phone_number;
     public Boolean selected = false;
 
+    /* Constructor. */
     public customer(String id, String first_name, String last_name, String email, String phone_number){
         this.id = id;
         this.first_name = first_name;

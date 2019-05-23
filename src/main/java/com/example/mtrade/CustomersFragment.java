@@ -33,15 +33,19 @@ public class CustomersFragment extends Fragment {
 
     ArrayList<customer> customers = new ArrayList<>();
 
+    private String user_id;
+
     private static final String TAG =  "CustomersFragment";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        Bundle args = getArguments();
+        user_id = args.getString("USER_ID");
+
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
-
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Customers");
 
@@ -49,7 +53,7 @@ public class CustomersFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_customers, container, false);
 
-        Cursor c = db.get_customers("1");
+        Cursor c = db.get_customers(user_id);
         while(c.moveToNext()){
             customers.add(new customer(
                     c.getString(c.getColumnIndex("CUSTOMER_ID")),
@@ -59,7 +63,6 @@ public class CustomersFragment extends Fragment {
                                             c.getString(c.getColumnIndex("MOBILE_NUMBER"))));
 
         }
-        //https://www.worldbestlearningcenter.com/tips/Android-ListView-item-and-button-clickable.htm
         c.close();
 
         final ListView simpleList = view.findViewById(R.id.simpleListView);
@@ -71,8 +74,6 @@ public class CustomersFragment extends Fragment {
         simpleList.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Log.e(TAG, "onItemClick: position: " + position);
-                //Log.e(TAG, "onItemClick: childCount: " + parent.getChildCount());
 
                 if(customers.get(position).selected){
                     selected[0] -= 1;
@@ -81,7 +82,6 @@ public class CustomersFragment extends Fragment {
                     selected[0] += 1;
                     customers.get(position).select();
                 }
-
 
                 if(selected[0] == 0){
                     add_flag = true;
@@ -113,8 +113,7 @@ public class CustomersFragment extends Fragment {
 
     }
 
-
-
+    /* Inflate action menu. */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
@@ -122,6 +121,7 @@ public class CustomersFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /* Set click event listeners for action menu buttons. */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
 
@@ -150,10 +150,15 @@ public class CustomersFragment extends Fragment {
                                     Toast.makeText(getContext(),"Please fill out all input fields.", Toast.LENGTH_SHORT).show();
                                 } else {
                                     final database_helper my_db = new database_helper(getContext());
-                                    if(my_db.create_customer(firstname,lastname,phone, email, 1) == 0){
+                                    if(my_db.create_customer(firstname,lastname,phone, email, Integer.parseInt(user_id)) == 0){
                                         Toast.makeText(getContext(),"Customer created successfully.", Toast.LENGTH_SHORT).show();
+
+                                        Fragment fragment = new CustomersFragment();
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("USER_ID", user_id);
+                                        fragment.setArguments(bundle);
                                         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                                new CustomersFragment()).commit();
+                                                fragment).commit();
                                     } else {
                                         Toast.makeText(getContext(),"Something went wrong.", Toast.LENGTH_SHORT).show();
                                     }
@@ -211,12 +216,17 @@ public class CustomersFragment extends Fragment {
                                             Toast.makeText(getContext(),"Please fill out all input fields.", Toast.LENGTH_SHORT).show();
                                         } else {
                                             final database_helper my_db = new database_helper(getContext());
-                                            if( my_db.update_customer(customer.id, firstname, lastname, phone, email, 1) != 1){
+                                            if( my_db.update_customer(customer.id, firstname, lastname, phone, email) != 1){
                                                 Toast.makeText(getContext(),"Something went wrong.", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(getContext(),"Update successful",Toast.LENGTH_SHORT).show();
+
+                                                Fragment fragment = new CustomersFragment();
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("USER_ID", user_id);
+                                                fragment.setArguments(bundle);
                                                 getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                                        new CustomersFragment()).commit();
+                                                        fragment).commit();
                                             }
                                         }
                                     }
@@ -266,14 +276,15 @@ public class CustomersFragment extends Fragment {
                                     Toast.makeText(getContext(),"Something went wrong.",Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getContext(),"Delete successful",Toast.LENGTH_SHORT).show();
+
+                                    Fragment fragment = new CustomersFragment();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("USER_ID", user_id);
+                                    fragment.setArguments(bundle);
                                     getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                            new CustomersFragment()).commit();
+                                            fragment).commit();
                                 }
 
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                //No button clicked
                                 break;
                         }
                     }

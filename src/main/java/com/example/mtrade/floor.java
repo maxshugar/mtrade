@@ -6,6 +6,7 @@ public class floor {
     public Double cost;
     public Boolean selected = false;
 
+    /* Constructor. */
     public floor(String id, String name, Double cost){
         this.id = id;
         this.name = name;

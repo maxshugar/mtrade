@@ -29,27 +29,24 @@ public class FloorAdapter extends ArrayAdapter<floor> {
         floorsList = list;
     }
 
+    /* Inflate floor and handle selected event. */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
         View listItem = convertView;
         if(listItem == null)
             listItem = LayoutInflater.from(fContext).inflate(R.layout.floor_item,parent,false);
-
         floor currentFloor = floorsList.get(position);
-
         TextView name = listItem.findViewById(R.id.floor_name);
         name.setText(currentFloor.name);
-
         TextView cost = listItem.findViewById(R.id.floor_cost);
         cost.setText("£" + currentFloor.cost.toString() + "/m²");
-
         if(currentFloor.selected){
             listItem.setBackgroundColor(Color.LTGRAY);
         } else {
             listItem.setBackgroundColor(Color.WHITE);
         }
-
         return listItem;
     }
 

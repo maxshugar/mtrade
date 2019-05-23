@@ -11,8 +11,10 @@ public class order {
     public Boolean status_complete;
     public String customer_name;
     public Boolean selected = false;
-    public ArrayList<room> rooms = new ArrayList<>();
+    public ArrayList<room> rooms;
+    public Boolean checked = false;
 
+    /* Constructor. */
     public order(String id, String customer_id, String due_date, Double total_cost, Boolean payment_recieved, String customer_name, Boolean status_complete, ArrayList<room> rooms){
         this.id = id;
         this.customer_id = customer_id;
@@ -31,4 +33,13 @@ public class order {
     public void deselect(){
         this.selected = false;
     }
+
+    public void check(){
+        this.checked = true;
+    }
+
+    public void uncheck(){
+        this.checked = false;
+    }
+
 }

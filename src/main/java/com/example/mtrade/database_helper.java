@@ -67,7 +67,6 @@ public class database_helper extends SQLiteOpenHelper {
 
             String password_salt = generate_salt(512);
             String password_hash = generate_hash(password, password_salt);
-            Log.e(TAG, "register_user: password_hash: " + password_hash);
 
             /* Get content values. */
             ContentValues contentValues = new ContentValues();
@@ -78,7 +77,6 @@ public class database_helper extends SQLiteOpenHelper {
             contentValues.put("VERIFICATION_KEY", "1234");
             contentValues.put("VERIFIED", "FALSE");
             contentValues.put("FAILED_ATTEMPTS", "0");
-
 
             long result = 0;
 
@@ -99,6 +97,7 @@ public class database_helper extends SQLiteOpenHelper {
 
     }
 
+    /* Return the users ID. */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public int validate_login(String username, String password){
 
@@ -108,6 +107,7 @@ public class database_helper extends SQLiteOpenHelper {
 
         Cursor cursor=db.rawQuery("select * from USERS where username=?",new String[]{username});
         if (cursor.moveToFirst()) {
+            String id = cursor.getString(cursor.getColumnIndex("USER_ID"));
             String hash = cursor.getString(cursor.getColumnIndex("PASSWORD_HASH"));
             String salt = cursor.getString(cursor.getColumnIndex("PASSWORD_SALT"));
             Log.d(TAG, "validate_login: hash: " + hash);
@@ -119,7 +119,7 @@ public class database_helper extends SQLiteOpenHelper {
             } else if(new_hash.equals(hash) == false){
                 ret = -3;
             } else if(new_hash.equals(hash) == true){
-                ret = 0;
+                ret = Integer.parseInt(id);
             }
         }
         else {
@@ -172,12 +172,10 @@ public class database_helper extends SQLiteOpenHelper {
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    /* Create a customer assigning parameters to properties. */
     public int create_customer(String firstname, String lastname, String phone, String email, int user_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
-        Log.e(TAG, "create_customer: firstname: " + firstname + ", lastname: " + lastname + ", phone: " + phone + ", email: " + email);
-
         /* Get content values. */
         ContentValues contentValues = new ContentValues();
         contentValues.put("FIRST_NAME", firstname);
@@ -185,16 +183,12 @@ public class database_helper extends SQLiteOpenHelper {
         contentValues.put("MOBILE_NUMBER", phone);
         contentValues.put("EMAIL_ADDRESS", email);
         contentValues.put("USER_ID", user_id);
-
         long result = 0;
-
         try{
             result = db.insertOrThrow("CUSTOMERS", null, contentValues);
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-        Log.d(TAG, "create_customer: " + (result >= 0));
         if (result == -1) {
             return -2;
         } else {
@@ -203,77 +197,70 @@ public class database_helper extends SQLiteOpenHelper {
 
     }
 
+    /* Delete customer. */
     public int delete_customer(String customer_id){
+
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("CUSTOMERS", "CUSTOMER_ID=?", new String[]{customer_id});
+
     }
 
-    public int update_customer(String customer_id, String firstname, String lastname, String phone, String email, int user_id){
-        SQLiteDatabase db = this.getWritableDatabase();
+    /* Update customer. */
+    public int update_customer(String customer_id, String firstname, String lastname, String phone, String email){
 
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("FIRST_NAME",firstname); //These Fields should be your String values of actual column names
         cv.put("LAST_NAME",lastname);
         cv.put("MOBILE_NUMBER",phone);
         cv.put("EMAIL_ADDRESS",email);
-
         return db.update("CUSTOMERS", cv, "CUSTOMER_ID=?", new String[]{customer_id});
 
     }
 
+    /* Get all customers for user. */
     public Cursor get_customers(String user_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = null;
         try{
             cursor = db.rawQuery("select * from CUSTOMERS WHERE USER_ID=?", new String[]{user_id});
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-
         return cursor;
 
     }
 
+    /* Get all floors for user. */
     public Cursor get_floors(String user_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = null;
         try{
             cursor = db.rawQuery("select * from FLOORS WHERE USER_ID=?", new String[]{user_id});
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-
         return cursor;
 
     }
 
+    /* Create floor. */
     public int create_floor(String name, String cost, int user_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
-        //Log.e(TAG, "create_floor: firstname: " + firstname + ", lastname: " + lastname + ", phone: " + phone + ", email: " + email);
-
         /* Get content values. */
         ContentValues contentValues = new ContentValues();
         contentValues.put("FLOOR_NAME", name);
         contentValues.put("FLOOR_COST", cost);
         contentValues.put("USER_ID", user_id);
-
         long result = 0;
-
         try{
             result = db.insertOrThrow("FLOORS", null, contentValues);
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-        //Log.d(TAG, "create_customer: " + (result >= 0));
         if (result == -1) {
             return -2;
         } else {
@@ -282,60 +269,57 @@ public class database_helper extends SQLiteOpenHelper {
 
     }
 
+    /* Delete floor. */
     public int delete_floor(String floor_id){
+
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("FLOORS", "FLOOR_ID=?", new String[]{floor_id});
+
     }
 
+    /* Update floor. */
     public int update_floor(String floor_id, String name, String cost){
+
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues cv = new ContentValues();
-        cv.put("FLOOR_NAME",name); //These Fields should be your String values of actual column names
+        cv.put("FLOOR_NAME",name);
         cv.put("FLOOR_COST",cost);
-
         return db.update("FLOORS", cv, "FLOOR_ID=?", new String[]{floor_id});
 
     }
 
+    /* Get orders for user. */
     public Cursor get_orders(String user_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = null;
         try{
             cursor = db.rawQuery("select * from ORDERS WHERE USER_ID=?", new String[]{user_id});
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-
         return cursor;
 
     }
 
+    /* Get rooms for user. */
     public Cursor get_rooms(String user_id, String order_id){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         Cursor cursor = null;
         try{
             cursor = db.rawQuery("select * from ROOMS WHERE USER_ID=? AND ORDER_ID=?", new String[]{user_id, order_id});
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-
         return cursor;
 
     }
 
-    //sql_query = "CREATE TABLE ORDERS (ORDER_ID INTEGER PRIMARY KEY AUTOINCREMENT, USER_ID INTEGER, CUSTOMER_ID INTEGER, DUE_DATE TEXT, TOTAL_COST TEXT, PAYMENT TEXT, CUSTOMER_NAME TEXT, STATUS TEXT, FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID), FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS(CUSTOMER_ID));";
-
-    public int create_order(int user_id, int customer_id, String due_date, Double total_cost, Boolean payment_recieved, String customer_name, Boolean status_complete ){
+    /* Create order. */
+    public int create_order(String user_id, int customer_id, String due_date, Double total_cost, Boolean payment_recieved, String customer_name, Boolean status_complete ){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         /* Get content values. */
         ContentValues contentValues = new ContentValues();
         contentValues.put("USER_ID", user_id);
@@ -345,16 +329,12 @@ public class database_helper extends SQLiteOpenHelper {
         contentValues.put("PAYMENT", payment_recieved);
         contentValues.put("CUSTOMER_NAME", customer_name);
         contentValues.put("STATUS", status_complete);
-
         long result = 0;
-
         try{
             result = db.insertOrThrow("ORDERS", null, contentValues);
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-        //Log.d(TAG, "create_customer: " + (result >= 0));
         if (result == -1) {
             return -2;
         } else {
@@ -363,10 +343,10 @@ public class database_helper extends SQLiteOpenHelper {
 
     }
 
-    public int create_room(int user_id, int order_id, int floor_id, Double room_size, Double room_cost, Boolean complete){
+    /* Create room for user. */
+    public int create_room(String user_id, int order_id, int floor_id, Double room_size, Double room_cost, Boolean complete){
 
         SQLiteDatabase db = this.getWritableDatabase();
-
         /* Get content values. */
         ContentValues contentValues = new ContentValues();
         contentValues.put("USER_ID", user_id);
@@ -375,21 +355,60 @@ public class database_helper extends SQLiteOpenHelper {
         contentValues.put("ROOM_SIZE", room_size);
         contentValues.put("ROOM_COST", room_cost);
         contentValues.put("COMPLETE", complete);
-
         long result = 0;
-
         try{
             result = db.insertOrThrow("ROOMS", null, contentValues);
-
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage());
         }
-        //Log.d(TAG, "create_customer: " + (result >= 0));
         if (result == -1) {
             return -2;
         } else {
             return 0;
         }
+
+    }
+
+    /* Update room. */
+    public int update_room(String room_id, int floor_id, Double room_size, Double room_cost){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        /* Get content values. */
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("FLOOR_ID", floor_id);
+        contentValues.put("ROOM_SIZE", room_size);
+        contentValues.put("ROOM_COST", room_cost);
+        return db.update("ROOMS", contentValues, "ROOM_ID=?", new String[]{room_id});
+
+    }
+
+    /* Delete order. */
+    public int delete_order(String order_id){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("ORDERS", "ORDER_ID=?", new String[]{order_id});
+
+    }
+
+    /* Delete room. */
+    public int delete_room(String room_id){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("ROOMS", "ROOM_ID=?", new String[]{room_id});
+
+    }
+
+
+    /* Update order. */
+    public int update_order(String order_id, int customer_id, String due_date, String customer_name ){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        /* Get content values. */
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("CUSTOMER_ID", customer_id);
+        contentValues.put("DUE_DATE", due_date);
+        contentValues.put("CUSTOMER_NAME", customer_name);
+        return db.update("ORDERS", contentValues, "ORDER_ID=?", new String[]{order_id});
 
     }
 

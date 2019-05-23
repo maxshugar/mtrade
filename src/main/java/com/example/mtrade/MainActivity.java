@@ -25,22 +25,15 @@ public class MainActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
+    /* Render login page and handle login and register buttons click event. */
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        /* Override login. */
-        Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
-        startActivity(intent);
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         final database_helper my_db = new database_helper(this);
-
         Button login_btn = findViewById(R.id.login_btn);
-
         login_btn.setOnClickListener(new View.OnClickListener(){
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -55,32 +48,27 @@ public class MainActivity extends AppCompatActivity {
                 }
                else{
                     int ret = my_db.validate_login(username, password);
-                    Log.d(TAG, "validate_login: '" + ret + "'");
                     if( ret == -1 ){
                         Toast.makeText(MainActivity.this, "Account with username '" + username + "' does not exist.", Toast.LENGTH_LONG).show();
                     } else if( ret == -2 ){
                         Toast.makeText(MainActivity.this, "Something went wrong :(", Toast.LENGTH_LONG).show();
                     } else if( ret == -3 ){
                         Toast.makeText(MainActivity.this, "Password incorrect.", Toast.LENGTH_LONG).show();
-                    } else if( ret == 0 ){
+                    } else if( ret >= 0 ){
                         Toast.makeText(MainActivity.this, "Login successful :)", Toast.LENGTH_LONG).show();
-
                         Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
-                        //intent.putExtra("TABLE_NAME", "USERS");
+                        intent.putExtra("USER_ID", Integer.toString(ret));
+                        Log.d(TAG, "validate_login: USER_ID: '" + ret + "'");
                         startActivity(intent);
-
                     }
                }
             }
         });
-
         Button register_btn = findViewById(R.id.register_btn);
-
         register_btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 Intent intent = new Intent(MainActivity.this, register.class);
-                intent.putExtra("TABLE_NAME", "USERS");
                 startActivity(intent);
             }
         });
